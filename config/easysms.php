@@ -24,11 +24,17 @@ return [
             'access_key_id' => env('SMS_ALIYUN_ACCESS_KEY_ID'),
             'access_key_secret' => env('SMS_ALIYUN_ACCESS_KEY_SECRET'),
             'sign_name' => env('SMS_ALIYUN_SIGN_NAME'),
+            'templates' => [
+                'register' => env('SMS_ALIYUN_TEMPLATE_REGISTER'),
+            ]
         ],
         'qcloud' => [
             'sdk_app_id' => env('SMS_QCLOUD_SDK_APP_ID'), // SDK APP ID
             'app_key' => env('SMS_QCLOUD_APP_KEY'), // APP KEY
             'sign_name' => env('SMS_QCLOUD_SIGN_NAME'), // 短信签名，如果使用默认签名，该字段可缺省（对应官方文档中的sign）
+            'templates' => [
+                'register' => env('SMS_QCLOUD_TEMPLATE_REGISTER'),
+            ]
         ],
     ],
 ];
