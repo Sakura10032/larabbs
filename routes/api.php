@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,11 +18,23 @@ Route::middleware('auth:api')->get('/user', static function (Request $request) {
     return $request->user();
 });
 
-Route::prefix('v1')->namespace('Api')->name('api.v1.')->group(static function() {
-    // 短信验证码
-    Route::post('verificationCodes', 'VerificationCodesController@store')
-        ->name('verificationCodes.store');
-    // 用户注册
-    Route::post('users', 'UsersController@store')
-        ->name('users.store');
-});
+Route::prefix('v1')
+    ->namespace('Api')
+    ->name('api.v1.')
+    ->group(static function () {
+
+        Route::middleware('throttle:' . config('api.rate_limits.sign'))
+            ->group(static function () {
+                // 短信验证码
+                Route::post('verificationCodes', 'VerificationCodesController@store')
+                    ->name('verificationCodes.store');
+                // 用户注册
+                Route::post('users', 'UsersController@store')
+                    ->name('users.store');
+            });
+
+        Route::middleware('throttle:' . config('api.rate_limits.access'))
+            ->group(static function () {
+
+            });
+    });
