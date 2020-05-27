@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\Image;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Resources\UserResource;
@@ -16,7 +17,7 @@ class UsersController extends Controller
      * @return UserResource
      * @throws AuthenticationException
      */
-    public function store(UserRequest $request)
+    public function store(UserRequest $request): UserResource
     {
         $verifyData = Cache::get($request->verification_key);
 
@@ -42,13 +43,47 @@ class UsersController extends Controller
     }
 
 
-    public function show(User $user, Request $request)
+    /**
+     * @param User $user
+     * @param Request $request
+     * @return UserResource
+     */
+    public function show(User $user, Request $request): UserResource
     {
         return new UserResource($user);
     }
 
-    public function me(Request $request)
+
+    /**
+     * @param Request $request
+     * @return UserResource
+     */
+    public function me(Request $request): UserResource
     {
         return new UserResource($request->user());
+    }
+
+
+    /**
+     * 更新用户信息
+     *
+     * @param UserRequest $request
+     * @return UserResource
+     */
+    public function update(UserRequest $request): UserResource
+    {
+        $user = $request->user();
+
+        $attributes = $request->only(['name', 'email', 'introduction']);
+
+        if ($request->avatar_image_id) {
+            $image = Image::find($request->avatar_image_id);
+
+            $attributes['avatar'] = $image->path;
+        }
+
+        $user->update($attributes);
+
+        return (new UserResource($user))->showSensitiveFields();
     }
 }
