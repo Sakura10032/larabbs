@@ -6,11 +6,16 @@ use App\Models\Topic;
 use App\Http\Resources\TopicResource;
 use App\Http\Requests\Api\TopicRequest;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Http\Response;
 
 class TopicsController extends Controller
 {
 
     /**
+     * 发布话题
+     *
      * @param TopicRequest $request
      * @param Topic $topic
      * @return TopicResource
@@ -25,6 +30,8 @@ class TopicsController extends Controller
     }
 
     /**
+     * 删除话题
+     *
      * @param TopicRequest $request
      * @param Topic $topic
      * @return TopicResource
@@ -36,5 +43,22 @@ class TopicsController extends Controller
 
         $topic->update($request->all());
         return new TopicResource($topic);
+    }
+
+
+    /**
+     * 删除话题
+     *
+     * @param Topic $topic
+     * @return Application|ResponseFactory|Response
+     * @throws AuthorizationException
+     */
+    public function destroy(Topic $topic)
+    {
+        $this->authorize('destroy', $topic);
+
+        $topic->delete();
+
+        return response(null, 204);
     }
 }
